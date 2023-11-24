@@ -1,0 +1,24 @@
+server:
+  port: 8083
+
+spring:
+  r2dbc:
+    url: r2dbc:mysql://localhost:3306/db_module25
+    username: root
+    password: password
+
+  flyway:
+    url: jdbc:mysql://localhost:3306/db_module25
+    locations: classpath:db/migration
+    password: ${spring.r2dbc.password}
+    user: ${spring.r2dbc.username}
+
+jwt:
+  password:
+    encoder:
+      salt: XfL5JQgvODcJTPDqyY69Gy1V6kjtO5km
+      iteration: 64
+      keylength: 256
+  secret: U2VjcmV0S2V5QnlFcmFTbWF0b3ZGb3JTdHVkeU1vZHVsZTIuNQ==
+  expiration: 3600
+  issuer: erasmatov
