@@ -17,7 +17,7 @@ jwt:
   password:
     encoder:
       salt: XfL5JQgvODcJTPDqyY69Gy1V6kjtO5km
-      iteration: 64
+      iteration: 128000
       keylength: 256
   secret: U2VjcmV0S2V5QnlFcmFTbWF0b3ZGb3JTdHVkeU1vZHVsZTIuNQ==
   expiration: 3600

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
@@ -17,8 +18,16 @@ import java.time.LocalDateTime;
 public class EventEntity {
     @Id
     private Long id;
+
+    private Long userId;
+    private Long fileId;
+
+    @Transient
     private UserEntity user;
+
+    @Transient
     private FileEntity file;
+
     private LocalDateTime createdAt;
     private EntityStatus status;
 }

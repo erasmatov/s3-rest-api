@@ -31,7 +31,7 @@ public class UserService {
         });
     }
 
-    public Mono<UserEntity> getUserById(Long id) {
+    public Mono<UserEntity> findUserById(Long id) {
         return userRepository.findById(id);
     }
 

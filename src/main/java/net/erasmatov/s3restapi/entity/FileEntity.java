@@ -17,6 +17,8 @@ import java.time.LocalDateTime;
 public class FileEntity {
     @Id
     private Long id;
+
+    private String filename;
     private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

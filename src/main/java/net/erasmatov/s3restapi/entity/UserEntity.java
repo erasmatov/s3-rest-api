@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.entity;
 
 import lombok.*;
 import org.springframework.data.annotation.Id;
+import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Table;
 
 import java.time.LocalDateTime;
@@ -15,10 +16,14 @@ import java.util.List;
 public class UserEntity {
     @Id
     private Long id;
+
     private String username;
     private String password;
     private UserRole role;
+
+    @Transient
     private List<EventEntity> events;
+
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
     private EntityStatus status;

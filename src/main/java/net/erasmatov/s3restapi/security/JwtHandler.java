@@ -2,8 +2,6 @@ package net.erasmatov.s3restapi.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Encoders;
-import io.jsonwebtoken.security.Keys;
 import net.erasmatov.s3restapi.exception.UnauthorizedException;
 import reactor.core.publisher.Mono;
 
