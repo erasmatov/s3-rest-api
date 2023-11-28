@@ -29,7 +29,7 @@ public class AuthRestControllerV1 {
     }
 
     @PostMapping("/login")
-    public Mono<AuthResponseDto> login(AuthRequestDto authRequestDto) {
+    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
         return securityService.authenticate(authRequestDto.getUsername(), authRequestDto.getPassword())
                 .flatMap(tokenDetails -> Mono.just(
                         AuthResponseDto.builder()
@@ -45,7 +45,7 @@ public class AuthRestControllerV1 {
     public Mono<UserDto> getUserInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userService.getUserById(customPrincipal.getId())
+        return userService.findUserById(customPrincipal.getId())
                 .map(userMapper::map);
     }
 }

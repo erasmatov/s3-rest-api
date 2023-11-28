@@ -54,10 +54,11 @@ public class WebSecurityConfig {
     private AuthenticationWebFilter bearerAuthenticationFilter(AuthenticationManager manager) {
         AuthenticationWebFilter bearerAuthenticationFilter = new AuthenticationWebFilter(manager);
 
-        bearerAuthenticationFilter.setServerAuthenticationConverter(
-                new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
+        bearerAuthenticationFilter
+                .setServerAuthenticationConverter(new BearerTokenServerAuthenticationConverter(new JwtHandler(secret)));
 
-        bearerAuthenticationFilter.setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
+        bearerAuthenticationFilter
+                .setRequiresAuthenticationMatcher(ServerWebExchangeMatchers.pathMatchers("/**"));
         return bearerAuthenticationFilter;
     }
 }

@@ -26,7 +26,7 @@ dependencies {
 	implementation 'org.flywaydb:flyway-mysql'
 	implementation "com.google.code.findbugs:jsr305:$googleFindbugsVersion"
 	implementation "org.mapstruct:mapstruct:$mupstructVersion"
-	implementation "io.jsonwebtoken:jjwt-api:$jjwtApiVersion"
+	implementation "io.jsonwebtoken:jjwt:$jjwtApiVersion"
 	implementation "javax.xml.bind:jaxb-api:$jaxbApiVersion"
 
 	compileOnly('org.projectlombok:lombok')

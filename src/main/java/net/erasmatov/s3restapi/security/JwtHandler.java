@@ -2,10 +2,11 @@ package net.erasmatov.s3restapi.security;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Encoders;
+import io.jsonwebtoken.security.Keys;
 import net.erasmatov.s3restapi.exception.UnauthorizedException;
 import reactor.core.publisher.Mono;
 
-import java.util.Base64;
 import java.util.Date;
 
 public class JwtHandler {
@@ -32,8 +33,10 @@ public class JwtHandler {
     }
 
     private Claims getClaimsFromToken(String token) {
+        String secretBase64 = Encoders.BASE64.encode(secret.getBytes());
+
         return Jwts.parser()
-                .setSigningKey(Base64.getEncoder().encodeToString(secret.getBytes()))
+                .verifyWith(Keys.hmacShaKeyFor(secretBase64.getBytes()))
                 .build()
                 .parseSignedClaims(token)
                 .getPayload();

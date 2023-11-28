@@ -4,6 +4,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Encoders;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.exception.AuthException;
 import net.erasmatov.s3restapi.service.UserService;
@@ -14,10 +15,10 @@ import reactor.core.publisher.Mono;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static net.erasmatov.s3restapi.entity.EntityStatus.INACTIVE;
 
 @Component
 @RequiredArgsConstructor
@@ -33,7 +34,10 @@ public class SecurityService {
     private String issuer;
 
     private TokenDetails generateToken(UserEntity user) {
-        Map<String, Object> claims = Map.of("role", user.getRole(), "username", user.getUsername());
+        Map<String, Object> claims = new HashMap<>() {{
+            put("role", user.getRole());
+            put("username", user.getUsername());
+        }};
         return generateToken(claims, user.getId().toString());
     }
 
@@ -67,10 +71,9 @@ public class SecurityService {
     }
 
     public Mono<TokenDetails> authenticate(String username, String password) {
-        return userService.getUserByUsername(username)
+        return userService.findUserByUsername(username)
                 .flatMap(user -> {
-
-                    if (user.getStatus().equals(INACTIVE)) {
+                    if (user.getStatus().equals(EntityStatus.INACTIVE)) {
                         return Mono.error(new AuthException("Account INACTIVE", "USER_ACCOUNT_STATUS"));
                     }
 
