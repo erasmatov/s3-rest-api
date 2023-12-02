@@ -8,6 +8,7 @@ import net.erasmatov.s3restapi.entity.UserRole;
 import net.erasmatov.s3restapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import java.time.LocalDateTime;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
@@ -32,6 +34,10 @@ public class UserService {
         ).doOnSuccess(u -> {
             log.info("IN registerUser - user: {} created", u);
         });
+    }
+
+    public Flux<UserEntity> findAllUsers() {
+        return userRepository.findAll();
     }
 
     public Mono<UserEntity> findUserById(Long id) {

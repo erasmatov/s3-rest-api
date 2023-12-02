@@ -23,4 +23,8 @@ public class FileService {
         return fileRepository.findById(id);
     }
 
+    public Mono<FileEntity> findFileByFilename(String filename) {
+        return fileRepository.findByFilename(filename);
+    }
+
 }

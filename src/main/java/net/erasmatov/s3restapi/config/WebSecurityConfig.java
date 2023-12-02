@@ -21,9 +21,11 @@ import reactor.core.publisher.Mono;
 @Configuration
 @EnableReactiveMethodSecurity
 public class WebSecurityConfig {
+
     @Value("${jwt.secret}")
     private String secret;
     private final String[] publicRoutes = {"/api/v1/auth/register", "/api/v1/auth/login"};
+
 
     @Bean
     public SecurityWebFilterChain securityWebFilterChain(ServerHttpSecurity http, AuthenticationManager manager) {

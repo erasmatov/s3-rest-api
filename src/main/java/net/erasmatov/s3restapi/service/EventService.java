@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.repository.EventRepository;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Slf4j
@@ -16,6 +17,10 @@ public class EventService {
     private final UserService userService;
     private final FileService fileService;
 
+    public Flux<EventEntity> findAllEvents() {
+        return eventRepository.findAll();
+    }
+
     public Mono<EventEntity> findEventById(Long id) {
         return eventRepository.findById(id)
                 .flatMap(eventEntity -> Mono.zip(userService.findUserById(eventEntity.getUserId()),
@@ -25,6 +30,14 @@ public class EventService {
                             eventEntity.setFile(tuples.getT2());
                             return eventEntity;
                         }));
+    }
+
+    public Mono<EventEntity> updateEvent(EventEntity entity) {
+        return null;
+    }
+
+    public Mono<Void> deleteEventById(Long id) {
+        return eventRepository.deleteById(id);
     }
 
 }
