@@ -2,9 +2,7 @@ package net.erasmatov.s3restapi.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.UserEntity;
-import net.erasmatov.s3restapi.entity.UserRole;
 import net.erasmatov.s3restapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -26,10 +24,10 @@ public class UserService {
                 user.toBuilder()
                         .username(user.getUsername())
                         .password(passwordEncoder.encode(user.getPassword()))
-                        .role(UserRole.USER)
+                        .role(user.getRole())
                         .createdAt(LocalDateTime.now())
                         .updatedAt(LocalDateTime.now())
-                        .status(EntityStatus.ACTIVE)
+                        .status(user.getStatus())
                         .build()
         ).doOnSuccess(u -> {
             log.info("IN registerUser - user: {} created", u);

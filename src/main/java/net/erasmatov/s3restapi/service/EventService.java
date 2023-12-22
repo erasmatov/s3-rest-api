@@ -23,13 +23,14 @@ public class EventService {
 
     public Mono<EventEntity> findEventById(Long id) {
         return eventRepository.findById(id)
-                .flatMap(eventEntity -> Mono.zip(userService.findUserById(eventEntity.getUserId()),
-                                fileService.findFileById(eventEntity.getFileId()))
-                        .map(tuples -> {
-                            eventEntity.setUser(tuples.getT1());
-                            eventEntity.setFile(tuples.getT2());
-                            return eventEntity;
-                        }));
+                .flatMap(eventEntity -> Mono.zip(
+                        userService.findUserById(eventEntity.getUserId()),
+                        fileService.findFileById(eventEntity.getFileId())
+                ).map(tuples -> {
+                    eventEntity.setUser(tuples.getT1());
+                    eventEntity.setFile(tuples.getT2());
+                    return eventEntity;
+                }));
     }
 
     public Mono<EventEntity> updateEvent(EventEntity entity) {

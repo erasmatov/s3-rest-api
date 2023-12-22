@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FileDto {
     private Long id;
+    private String filename;
     private String location;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;

@@ -25,7 +25,8 @@ public class UserEntity {
     private String password;
 
     @Column("role")
-    private UserRole role;
+    @Builder.Default
+    private UserRole role = UserRole.USER;
 
     @Transient
     private List<EventEntity> events;
@@ -37,7 +38,8 @@ public class UserEntity {
     private LocalDateTime updatedAt;
 
     @Column("status")
-    private EntityStatus status;
+    @Builder.Default
+    private EntityStatus status = EntityStatus.ACTIVE;
 
 
     @ToString.Include(name = "password")
