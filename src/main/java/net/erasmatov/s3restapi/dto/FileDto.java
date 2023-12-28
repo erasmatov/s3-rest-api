@@ -5,15 +5,16 @@ import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FileDto {
+
     private Long id;
     private String filename;
     private String location;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private EntityStatus status;
 }

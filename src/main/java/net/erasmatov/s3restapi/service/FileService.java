@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.entity.FileEntity;
 import net.erasmatov.s3restapi.repository.FileRepository;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,6 +15,11 @@ import reactor.core.publisher.Mono;
 public class FileService {
 
     private final FileRepository fileRepository;
+    private final AwsS3ObjectStorageService objectStorageService;
+
+    public Mono<FileEntity> uploadFile(FilePart filePart) {
+
+    }
 
     public Flux<FileEntity> findAllFiles() {
         return fileRepository.findAll();

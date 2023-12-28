@@ -1,25 +1,32 @@
 package net.erasmatov.s3restapi.rest;
 
-import com.amazonaws.services.s3.transfer.model.UploadResult;
 import lombok.RequiredArgsConstructor;
-import net.erasmatov.s3restapi.service.S3Service;
-import org.springframework.http.ResponseEntity;
+import net.erasmatov.s3restapi.common.FileUtils;
+import net.erasmatov.s3restapi.service.FileService;
+import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.multipart.MultipartFile;
+import reactor.core.publisher.Mono;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/files")
 public class FileRestControllerV1 {
-    private S3Service s3Service;
 
-    @PostMapping(value = "/upload")
-    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file) {
-        UploadResult result = s3Service.putObject(file);
-        return ResponseEntity.ok(result.getKey());
+    private final FileService fileService;
+
+    @PostMapping("/upload")
+    public Mono<?> upload(@RequestPart("file-data") Mono<FilePart> filePart) {
+        return filePart
+                .map(file -> {
+                    FileUtils.filePartValidator(file);
+                    return file;
+                })
+                .flatMap(fileService::uploadFile)
+                .map(fileResponse -> new SuccessResponse(fileResponse, "Upload successfully"));
     }
+
 
 }

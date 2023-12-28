@@ -8,7 +8,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder(toBuilder = true)
@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table("files")
 public class FileEntity {
+
     @Id
     private Long id;
 
@@ -26,10 +27,10 @@ public class FileEntity {
     private String location;
 
     @Column("created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column("updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column("status")
     private EntityStatus status;
