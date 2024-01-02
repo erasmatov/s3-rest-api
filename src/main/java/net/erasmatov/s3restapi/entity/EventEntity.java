@@ -17,6 +17,7 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table("events")
 public class EventEntity {
+
     @Id
     private Long id;
 

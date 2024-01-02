@@ -41,5 +41,9 @@ public class EventService {
         return eventRepository.deleteById(id);
     }
 
+    public Mono<EventEntity> saveEvent(EventEntity entity) {
+        return eventRepository.save(entity);
+    }
+
 }
 
