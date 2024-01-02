@@ -13,6 +13,14 @@ spring:
     password: ${spring.r2dbc.password}
     user: ${spring.r2dbc.username}
 
+aws:
+  access-key: access-key
+  secret-key: secret-key
+  region: ru-central1
+  s3-bucket-name: bucket-name
+  multipart-min-part-size: 5242880
+  endpoint: endpoint
+
 jwt:
   password:
     encoder:
@@ -23,9 +31,5 @@ jwt:
   expiration: 3600
   issuer: erasmatov
 
-aws:
-  access-key: access-key
-  secret-key: secret-key
-  region: ru-central1
-  s3-bucket-name: bucket-name
-  endpoint: storage.yandexcloud.net
+content:
+  types: image/png, image/jpg, image/jpeg, image/bmp, image/gif, image/ief, image/pipeg, image/svg+xml, image/tiff
