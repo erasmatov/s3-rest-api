@@ -26,7 +26,7 @@ public class AwsS3Config {
                 .httpClient(sdkAsyncHttpClient())
                 .region(Region.of(s3ConfigProperties.getRegion()))
                 .credentialsProvider(awsCredentialsProvider)
-                .endpointOverride(URI.create(s3ConfigProperties.getEndpoint()))
+                .endpointOverride(URI.create("https://" + s3ConfigProperties.getEndpoint()))
                 .forcePathStyle(true)
                 .serviceConfiguration(s3Configuration())
                 .build();

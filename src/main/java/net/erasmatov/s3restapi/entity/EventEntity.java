@@ -9,7 +9,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @Builder(toBuilder = true)
@@ -34,7 +34,7 @@ public class EventEntity {
     private FileEntity file;
 
     @Column("created_At")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column("status")
     private EntityStatus status;

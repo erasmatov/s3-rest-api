@@ -29,6 +29,7 @@ dependencies {
     implementation(platform("software.amazon.awssdk:bom:${awsSdkBomVersion}"))
     implementation("software.amazon.awssdk:s3")
     implementation("software.amazon.awssdk:netty-nio-client")
+    runtimeOnly "io.netty:netty-resolver-dns-native-macos:4.1.76.Final:osx-aarch_64"
 
     implementation "com.google.code.findbugs:jsr305:$googleFindbugsVersion"
     implementation "io.jsonwebtoken:jjwt:$jjwtApiVersion"

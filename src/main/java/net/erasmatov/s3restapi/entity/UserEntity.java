@@ -6,7 +6,7 @@ import org.springframework.data.annotation.Transient;
 import org.springframework.data.relational.core.mapping.Column;
 import org.springframework.data.relational.core.mapping.Table;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -33,10 +33,10 @@ public class UserEntity {
     private List<EventEntity> events;
 
     @Column("created_at")
-    private LocalDateTime createdAt;
+    private Instant createdAt;
 
     @Column("updated_at")
-    private LocalDateTime updatedAt;
+    private Instant updatedAt;
 
     @Column("status")
     @Builder.Default

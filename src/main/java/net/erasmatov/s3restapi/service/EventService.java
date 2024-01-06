@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.repository.EventRepository;
+import net.erasmatov.s3restapi.repository.FileRepository;
+import net.erasmatov.s3restapi.repository.UserRepository;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -14,8 +16,8 @@ import reactor.core.publisher.Mono;
 public class EventService {
 
     private final EventRepository eventRepository;
-    private final UserService userService;
-    private final FileService fileService;
+    private final UserRepository userRepository;
+    private final FileRepository fileRepository;
 
     public Flux<EventEntity> findAllEvents() {
         return eventRepository.findAll();
@@ -24,8 +26,8 @@ public class EventService {
     public Mono<EventEntity> findEventById(Long id) {
         return eventRepository.findById(id)
                 .flatMap(eventEntity -> Mono.zip(
-                        userService.findUserById(eventEntity.getUserId()),
-                        fileService.findFileById(eventEntity.getFileId())
+                        userRepository.findById(eventEntity.getUserId()),
+                        fileRepository.findById(eventEntity.getFileId())
                 ).map(tuples -> {
                     eventEntity.setUser(tuples.getT1());
                     eventEntity.setFile(tuples.getT2());

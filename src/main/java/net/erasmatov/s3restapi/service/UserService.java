@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Slf4j
 @Service
@@ -25,8 +25,8 @@ public class UserService {
                         .username(user.getUsername())
                         .password(passwordEncoder.encode(user.getPassword()))
                         .role(user.getRole())
-                        .createdAt(LocalDateTime.now())
-                        .updatedAt(LocalDateTime.now())
+                        .createdAt(Instant.now())
+                        .updatedAt(Instant.now())
                         .status(user.getStatus())
                         .build()
         ).doOnSuccess(u -> {

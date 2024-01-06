@@ -7,7 +7,7 @@ import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.FileEntity;
 import net.erasmatov.s3restapi.entity.UserEntity;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
@@ -15,6 +15,6 @@ public class EventDto {
     private Long id;
     private UserEntity user;
     private FileEntity file;
-    private LocalDateTime createdAt;
+    private Instant createdAt;
     private EntityStatus status;
 }

@@ -8,7 +8,7 @@ import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.entity.UserRole;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Data
@@ -20,7 +20,7 @@ public class UserDto {
     private String password;
     private UserRole role;
     private List<EventEntity> events;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private Instant createdAt;
+    private Instant updatedAt;
     private EntityStatus status;
 }
