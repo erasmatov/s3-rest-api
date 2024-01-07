@@ -40,7 +40,7 @@ public class FileUtils {
         }
 
         ByteBuffer partData = ByteBuffer.allocate(partSize);
-        buffers.forEach(buffer -> partData.put(buffer.toByteBuffer()));
+        buffers.forEach(buffer -> buffer.toByteBuffer(partData));
 
         partData.rewind();
 

@@ -5,7 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.common.FileUtils;
 import net.erasmatov.s3restapi.config.AwsProperties;
 import net.erasmatov.s3restapi.dto.FileResponseDto;
-import net.erasmatov.s3restapi.entity.UploadStatus;
+import net.erasmatov.s3restapi.entity.UploadState;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.http.MediaType;
 import org.springframework.http.codec.multipart.FilePart;
@@ -16,6 +16,7 @@ import software.amazon.awssdk.services.s3.S3AsyncClient;
 import software.amazon.awssdk.services.s3.model.*;
 
 import java.nio.ByteBuffer;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
@@ -31,12 +32,12 @@ public class AwsS3ObjectStorageService {
     public Mono<FileResponseDto> uploadObject(FilePart filePart) {
 
         String filename = filePart.filename();
-
-        Map<String, String> metadata = Map.of("filename", filename);
-
+        Map<String, String> metadata = new HashMap<>();
         MediaType mediaType = ObjectUtils.defaultIfNull(filePart.headers().getContentType(), MediaType.APPLICATION_OCTET_STREAM);
+        metadata.put("filename", filename);
 
-        CompletableFuture<CreateMultipartUploadResponse> s3AsyncClientMultipartUpload = s3AsyncClient
+        UploadState uploadState = new UploadState(filename, Objects.requireNonNull(filePart.headers().getContentType()).toString());
+        CompletableFuture<CreateMultipartUploadResponse> uploadRequest = s3AsyncClient
                 .createMultipartUpload(CreateMultipartUploadRequest.builder()
                         .contentType(mediaType.toString())
                         .key(filename)
@@ -44,53 +45,48 @@ public class AwsS3ObjectStorageService {
                         .bucket(s3ConfigProperties.getS3BucketName())
                         .build());
 
-        UploadStatus uploadStatus = new UploadStatus(Objects.requireNonNull(filePart.headers().getContentType()).toString(), filename);
-
-        return Mono.fromFuture(s3AsyncClientMultipartUpload)
-                .flatMapMany(response -> {
+        return Mono
+                .fromFuture(uploadRequest)
+                .flatMapMany((response) -> {
                     FileUtils.checkSdkResponse(response);
-                    uploadStatus.setUploadId(response.uploadId());
-                    log.info("Upload object with ID={}", response.uploadId());
+                    uploadState.setUploadId(response.uploadId());
                     return filePart.content();
                 })
                 .bufferUntil(dataBuffer -> {
-                    uploadStatus.addBuffered(dataBuffer.readableByteCount());
-
-                    if (uploadStatus.getBuffered() >= s3ConfigProperties.getMultipartMinPartSize()) {
+                    uploadState.addBuffered(dataBuffer.readableByteCount());
+                    if (uploadState.getBuffered() >= s3ConfigProperties.getMultipartMinPartSize()) {
                         log.info("BufferUntil - returning true, bufferedBytes={}, partCounter={}, uploadId={}",
-                                uploadStatus.getBuffered(), uploadStatus.getPartCounter(), uploadStatus.getUploadId());
-
-                        uploadStatus.setBuffered(0);
+                                uploadState.getBuffered(), uploadState.getPartCounter(), uploadState.getUploadId());
+                        uploadState.setBuffered(0);
                         return true;
                     }
-
                     return false;
                 })
                 .map(FileUtils::dataBufferToByteBuffer)
-                .flatMap(byteBuffer -> uploadPartObject(uploadStatus, byteBuffer))
+                .flatMap(byteBuffer -> uploadPartObject(uploadState, byteBuffer))
                 .onBackpressureBuffer()
-                .reduce(uploadStatus, (status, completedPart) -> {
+                .reduce(uploadState, (state, completedPart) -> {
                     log.info("Completed: PartNumber={}, etag={}", completedPart.partNumber(), completedPart.eTag());
-                    (status).getCompletedParts().put(completedPart.partNumber(), completedPart);
-                    return status;
+                    (state).getCompletedParts().put(completedPart.partNumber(), completedPart);
+                    return state;
                 })
-                .flatMap(uploadStatus1 -> completeMultipartUpload(uploadStatus))
+                .flatMap(state -> completeMultipartUpload(uploadState))
                 .map(response -> {
                     FileUtils.checkSdkResponse(response);
                     log.info("upload result: {}", response.toString());
-                    return new FileResponseDto(filename, uploadStatus.getUploadId(), response.location(), uploadStatus.getContentType(), response.eTag());
+                    return new FileResponseDto(filename, uploadState.getUploadId(), response.location(), uploadState.getContentType(), response.eTag());
                 });
     }
 
-    private Mono<CompletedPart> uploadPartObject(UploadStatus uploadStatus, ByteBuffer buffer) {
-        final int partNumber = uploadStatus.getAddedPartCounter();
+    private Mono<CompletedPart> uploadPartObject(UploadState uploadState, ByteBuffer buffer) {
+        final int partNumber = uploadState.getAddedPartCounter();
         log.info("UploadPart - partNumber={}, contentLength={}", partNumber, buffer.capacity());
 
         CompletableFuture<UploadPartResponse> uploadPartResponseCompletableFuture = s3AsyncClient.uploadPart(UploadPartRequest.builder()
                         .bucket(s3ConfigProperties.getS3BucketName())
-                        .key(uploadStatus.getFileKey())
+                        .key(uploadState.getFileKey())
                         .partNumber(partNumber)
-                        .uploadId(uploadStatus.getUploadId())
+                        .uploadId(uploadState.getUploadId())
                         .contentLength((long) buffer.capacity())
                         .build(),
                 AsyncRequestBody.fromPublisher(Mono.just(buffer)));
@@ -107,19 +103,19 @@ public class AwsS3ObjectStorageService {
                 });
     }
 
-    private Mono<CompleteMultipartUploadResponse> completeMultipartUpload(UploadStatus uploadStatus) {
+    private Mono<CompleteMultipartUploadResponse> completeMultipartUpload(UploadState uploadState) {
         log.info("CompleteUpload - fileKey={}, completedParts.size={}",
-                uploadStatus.getFileKey(), uploadStatus.getCompletedParts().size());
+                uploadState.getFileKey(), uploadState.getCompletedParts().size());
 
         CompletedMultipartUpload multipartUpload = CompletedMultipartUpload.builder()
-                .parts(uploadStatus.getCompletedParts().values())
+                .parts(uploadState.getCompletedParts().values())
                 .build();
 
         return Mono.fromFuture(s3AsyncClient.completeMultipartUpload(CompleteMultipartUploadRequest.builder()
                 .bucket(s3ConfigProperties.getS3BucketName())
-                .uploadId(uploadStatus.getUploadId())
+                .uploadId(uploadState.getUploadId())
                 .multipartUpload(multipartUpload)
-                .key(uploadStatus.getFileKey())
+                .key(uploadState.getFileKey())
                 .build()));
     }
 }

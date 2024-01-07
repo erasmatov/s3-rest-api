@@ -27,7 +27,6 @@ public class AwsS3Config {
                 .region(Region.of(s3ConfigProperties.getRegion()))
                 .credentialsProvider(awsCredentialsProvider)
                 .endpointOverride(URI.create("https://" + s3ConfigProperties.getEndpoint()))
-                .forcePathStyle(true)
                 .serviceConfiguration(s3Configuration())
                 .build();
     }
