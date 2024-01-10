@@ -1,7 +1,6 @@
 package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
-import net.erasmatov.s3restapi.common.FileUtils;
 import net.erasmatov.s3restapi.service.FileService;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.Authentication;
@@ -19,10 +18,7 @@ public class FileRestControllerV1 {
     private final FileService fileService;
 
     @PostMapping("/upload")
-    public Mono<?> upload(Authentication authentication, @RequestPart("file-data") Mono<FilePart> filePart) {
-
-        return filePart
-                .map(file -> fileService.uploadFile(file, authentication.getName()));
+    public Mono<?> upload(Authentication authentication, @RequestPart("file-data") FilePart filePart) {
+        return fileService.uploadFile(filePart, authentication.getName());
     }
-
 }
