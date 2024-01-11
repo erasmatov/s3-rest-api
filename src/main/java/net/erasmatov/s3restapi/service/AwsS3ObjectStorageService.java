@@ -30,6 +30,12 @@ public class AwsS3ObjectStorageService {
         String keyName = filePart.filename();
         String bucketName = s3ConfigProperties.getS3BucketName();
         Instant instantTime = Instant.now();
+        String path = "https://"
+                + s3ConfigProperties.getS3BucketName()
+                + "."
+                + s3ConfigProperties.getEndpoint()
+                + "/"
+                + keyName;
 
         CompletableFuture.runAsync(() -> {
             ByteBuffer dataByteBuffer = filePart.content().flatMap(dataBuffer -> {
@@ -52,6 +58,6 @@ public class AwsS3ObjectStorageService {
             }
         });
 
-        return Mono.just(new FileResponseDto(keyName, null, instantTime, instantTime));
+        return Mono.just(new FileResponseDto(keyName, path, instantTime, instantTime));
     }
 }
