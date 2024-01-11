@@ -36,9 +36,10 @@ public class FileService {
                     FileEntity fileEntity = FileEntity.builder()
                             .filename(fileResponseDto.getName())
                             .location(fileResponseDto.getPath())
+                            .createdAt(fileResponseDto.getCreatedAt())
+                            .updatedAt(fileResponseDto.getUpdatedAt())
                             .status(EntityStatus.ACTIVE)
                             .build();
-
                     return fileRepository.save(fileEntity)
                             .flatMap(savedFileEntity -> {
                                 EventEntity eventEntity = EventEntity.builder()
@@ -47,7 +48,6 @@ public class FileService {
                                         .createdAt(Instant.now())
                                         .status(EntityStatus.ACTIVE)
                                         .build();
-
                                 return eventService.saveEvent(eventEntity)
                                         .thenReturn(fileEntity);
                             });

@@ -1,9 +1,9 @@
 package net.erasmatov.s3restapi.service;
 
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
-import com.amazonaws.services.s3.model.PutObjectResult;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.config.AwsProperties;
@@ -13,6 +13,9 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 
 import java.io.ByteArrayInputStream;
+import java.nio.ByteBuffer;
+import java.time.Instant;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 @RequiredArgsConstructor
@@ -20,21 +23,35 @@ import java.util.concurrent.CompletableFuture;
 @Service
 public class AwsS3ObjectStorageService {
 
-    private final AmazonS3 s3Client;
     private final AwsProperties s3ConfigProperties;
+    private final AmazonS3 amazonS3;
 
     public Mono<FileResponseDto> uploadObject(FilePart filePart) {
         String keyName = filePart.filename();
+        String bucketName = s3ConfigProperties.getS3BucketName();
+        Instant instantTime = Instant.now();
 
-        CompletableFuture<PutObjectResult> uploadRequest = CompletableFuture.supplyAsync(() -> {
-            byte[] file = filePart.content().map(dataBuffer -> dataBuffer.asByteBuffer().array()).blockFirst();
+        CompletableFuture.runAsync(() -> {
+            ByteBuffer dataByteBuffer = filePart.content().flatMap(dataBuffer -> {
+                ByteBuffer content = ByteBuffer.allocate(dataBuffer.readableByteCount());
+                dataBuffer.toByteBuffer(content);
+                return Mono.just(content);
+            }).blockFirst();
 
-            PutObjectRequest putObjectRequest =
-                    new PutObjectRequest(s3ConfigProperties.getS3BucketName(),
-                            keyName, new ByteArrayInputStream(file), new ObjectMetadata());
-            return s3Client.putObject(putObjectRequest);
+            ObjectMetadata objectMetadata = new ObjectMetadata();
+            objectMetadata.setContentLength(Objects.requireNonNull(dataByteBuffer).capacity());
+
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(dataByteBuffer.array());
+
+            PutObjectRequest objectRequest = new PutObjectRequest(bucketName, keyName, inputStream, objectMetadata);
+
+            try {
+                amazonS3.putObject(objectRequest);
+            } catch (SdkClientException e) {
+                throw new RuntimeException(e);
+            }
         });
-        return Mono.fromFuture(uploadRequest)
-                .map(objectResult -> new FileResponseDto(filePart.name(), objectResult.getVersionId().toString(), objectResult.getContentMd5().toString(), objectResult.getETag().toString(), objectResult.toString()));
+
+        return Mono.just(new FileResponseDto(keyName, null, instantTime, instantTime));
     }
 }

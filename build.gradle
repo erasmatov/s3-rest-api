@@ -36,7 +36,6 @@ dependencies {
     annotationProcessor "org.projectlombok:lombok:$lombokVersion"
     implementation "org.mapstruct:mapstruct:$mupstructVersion"
     annotationProcessor "org.mapstruct:mapstruct-processor:$mupstructVersion"
-    implementation "org.apache.commons:commons-lang3:$commonsLang3Version"
 
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
