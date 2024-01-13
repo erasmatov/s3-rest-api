@@ -26,7 +26,6 @@ public class FileService {
     private final EventService eventService;
 
     public Mono<FileEntity> uploadFile(FilePart filePart, String username) {
-
         return Mono.zip(objectStorageService.uploadObject(filePart),
                         userService.findUserByUsername(username))
                 .flatMap(tuples -> {

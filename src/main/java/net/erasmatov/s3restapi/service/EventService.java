@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -33,6 +35,11 @@ public class EventService {
                     eventEntity.setFile(tuples.getT2());
                     return eventEntity;
                 }));
+    }
+
+    public Mono<List<EventEntity>> findEventsByUserId(Long userId) {
+        return eventRepository.findEventEntitiesByUserId(userId)
+                .collectList();
     }
 
     public Mono<EventEntity> updateEvent(EventEntity entity) {

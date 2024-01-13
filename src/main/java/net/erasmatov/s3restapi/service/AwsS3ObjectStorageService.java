@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.config.AwsProperties;
 import net.erasmatov.s3restapi.dto.FileResponseDto;
+import net.erasmatov.s3restapi.exception.UnloadedException;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
@@ -54,7 +55,7 @@ public class AwsS3ObjectStorageService {
             try {
                 amazonS3.putObject(objectRequest);
             } catch (SdkClientException e) {
-                throw new RuntimeException(e);
+                throw new UnloadedException(e.getMessage());
             }
         });
 

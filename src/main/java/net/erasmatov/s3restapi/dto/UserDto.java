@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.annotation.JsonNaming;
 import lombok.Data;
 import net.erasmatov.s3restapi.entity.EntityStatus;
-import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.entity.UserRole;
 
 import java.time.Instant;
@@ -19,7 +18,7 @@ public class UserDto {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
     private UserRole role;
-    private List<EventEntity> events;
+    private List<EventDto> events;
     private Instant createdAt;
     private Instant updatedAt;
     private EntityStatus status;

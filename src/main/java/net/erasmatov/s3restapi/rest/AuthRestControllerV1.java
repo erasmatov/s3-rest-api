@@ -8,6 +8,7 @@ import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.mapper.UserMapper;
 import net.erasmatov.s3restapi.security.CustomPrincipal;
 import net.erasmatov.s3restapi.security.SecurityService;
+import net.erasmatov.s3restapi.service.EventService;
 import net.erasmatov.s3restapi.service.UserService;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class AuthRestControllerV1 {
 
     private final SecurityService securityService;
     private final UserService userService;
+    private final EventService eventService;
     private final UserMapper userMapper;
 
     @PostMapping("/register")
@@ -46,7 +48,12 @@ public class AuthRestControllerV1 {
     public Mono<UserDto> getUserInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
 
-        return userService.findUserById(customPrincipal.getId())
-                .map(userMapper::map);
+        return Mono.zip(userService.findUserById(customPrincipal.getId()),
+                        eventService.findEventsByUserId(customPrincipal.getId()))
+                .map(tuples -> {
+                    UserEntity userEntity = tuples.getT1();
+                    userEntity.setEvents(tuples.getT2());
+                    return userEntity;
+                }).map(userMapper::map);
     }
 }

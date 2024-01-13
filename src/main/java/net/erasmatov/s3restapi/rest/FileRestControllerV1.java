@@ -1,6 +1,7 @@
 package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
+import net.erasmatov.s3restapi.mapper.FileMapper;
 import net.erasmatov.s3restapi.service.FileService;
 import org.springframework.http.codec.multipart.FilePart;
 import org.springframework.security.core.Authentication;
@@ -16,9 +17,11 @@ import reactor.core.publisher.Mono;
 public class FileRestControllerV1 {
 
     private final FileService fileService;
+    private final FileMapper fileMapper;
 
     @PostMapping("/upload")
     public Mono<?> upload(Authentication authentication, @RequestPart("file-data") FilePart filePart) {
-        return fileService.uploadFile(filePart, authentication.getName());
+        return fileService.uploadFile(filePart, authentication.getName())
+                .map(fileMapper::map);
     }
 }
