@@ -47,13 +47,13 @@ public class AuthRestControllerV1 {
     @GetMapping("/info")
     public Mono<UserDto> getUserInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
-
         return Mono.zip(userService.findUserById(customPrincipal.getId()),
-                        eventService.findEventsByUserId(customPrincipal.getId()))
+                        eventService.getEventsByUserId(customPrincipal.getId()).collectList())
                 .map(tuples -> {
                     UserEntity userEntity = tuples.getT1();
                     userEntity.setEvents(tuples.getT2());
                     return userEntity;
-                }).map(userMapper::map);
+                })
+                .map(userMapper::map);
     }
 }

@@ -5,5 +5,5 @@ import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import reactor.core.publisher.Flux;
 
 public interface EventRepository extends R2dbcRepository<EventEntity, Long> {
-    Flux<EventEntity> findEventEntitiesByUserId(Long userId);
+    Flux<EventEntity> findAllByUserId(Long userId);
 }

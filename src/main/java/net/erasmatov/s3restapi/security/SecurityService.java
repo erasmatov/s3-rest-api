@@ -15,6 +15,7 @@ import reactor.core.publisher.Mono;
 
 import java.security.Key;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
@@ -33,7 +34,10 @@ public class SecurityService {
     private String issuer;
 
     private TokenDetails generateToken(UserEntity user) {
-        Map<String, Object> claims = Map.of("role", user.getRole(), "username", user.getUsername());
+        Map<String, Object> claims = new HashMap<>() {{
+            put("role", user.getRole());
+            put("username", user.getUsername());
+        }};
         return generateToken(claims, user.getId().toString());
     }
 

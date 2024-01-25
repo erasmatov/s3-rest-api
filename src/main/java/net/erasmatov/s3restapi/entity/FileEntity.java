@@ -16,7 +16,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @Table("files")
 public class FileEntity {
-
     @Id
     private Long id;
 

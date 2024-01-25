@@ -2,7 +2,10 @@ package net.erasmatov.s3restapi.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.UserEntity;
+import net.erasmatov.s3restapi.entity.UserRole;
+import net.erasmatov.s3restapi.mapper.UserMapper;
 import net.erasmatov.s3restapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper mapper;
 
     public Mono<UserEntity> registerUser(UserEntity user) {
         return userRepository.save(
@@ -27,23 +31,26 @@ public class UserService {
                         .role(user.getRole())
                         .createdAt(Instant.now())
                         .updatedAt(Instant.now())
-                        .status(user.getStatus())
+                        .status(EntityStatus.ACTIVE)
                         .build()
         ).doOnSuccess(u -> {
             log.info("IN registerUser - user: {} created", u);
         });
     }
 
-    public Flux<UserEntity> findAllUsers() {
-        return userRepository.findAll();
-    }
-
-    public Mono<UserEntity> findUserById(Long id) {
-        return userRepository.findById(id);
+    public Mono<UserEntity> findUserById(Long userId) {
+        return userRepository.findById(userId);
     }
 
     public Mono<UserEntity> findUserByUsername(String username) {
         return userRepository.findByUsername(username);
     }
 
+    public Flux<UserEntity> getUsersByRole(UserRole role) {
+        return userRepository.findAllByRole(role);
+    }
+
+    public Flux<UserEntity> getAllUsers() {
+        return userRepository.findAll();
+    }
 }

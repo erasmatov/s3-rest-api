@@ -13,6 +13,5 @@ public class AwsProperties {
     private String secretKey;
     private String region;
     private String S3BucketName;
-    private int multipartMinPartSize;
     private String endpoint;
 }
