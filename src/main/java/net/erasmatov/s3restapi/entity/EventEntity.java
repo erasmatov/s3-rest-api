@@ -17,7 +17,6 @@ import java.time.Instant;
 @AllArgsConstructor
 @Table("events")
 public class EventEntity {
-
     @Id
     private Long id;
 

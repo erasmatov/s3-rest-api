@@ -10,7 +10,6 @@ import java.time.Instant;
 @Data
 @JsonNaming(PropertyNamingStrategies.SnakeCaseStrategy.class)
 public class FileDto {
-
     private Long id;
     private String filename;
     private String location;

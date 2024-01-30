@@ -8,7 +8,6 @@ import org.springframework.stereotype.Component;
 @Component
 @ConfigurationProperties(prefix = "aws", ignoreUnknownFields = false)
 public class AwsProperties {
-
     private String accessKey;
     private String secretKey;
     private String region;

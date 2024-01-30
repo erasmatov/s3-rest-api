@@ -8,7 +8,6 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface EventMapper {
-
     EventDto map(EventEntity eventEntity);
 
     @Mapping(target = "user", ignore = true)

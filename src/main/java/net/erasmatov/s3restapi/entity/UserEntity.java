@@ -15,7 +15,6 @@ import java.util.List;
 @AllArgsConstructor
 @Table("users")
 public class UserEntity {
-
     @Id
     private Long id;
 
