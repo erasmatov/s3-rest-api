@@ -5,7 +5,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.entity.UserRole;
-import net.erasmatov.s3restapi.mapper.UserMapper;
 import net.erasmatov.s3restapi.repository.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,7 +20,6 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final UserMapper mapper;
 
     public Mono<UserEntity> registerUser(UserEntity user) {
         return userRepository.save(
@@ -52,5 +50,18 @@ public class UserService {
 
     public Flux<UserEntity> getAllUsers() {
         return userRepository.findAll();
+    }
+
+    public Mono<UserEntity> saveUser(UserEntity entity) {
+        return userRepository.save(entity);
+    }
+
+    public Mono<UserEntity> deleteUserById(Long userId) {
+        return userRepository.findById(userId)
+                .flatMap(userEntity -> {
+                    userEntity.setUpdatedAt(Instant.now());
+                    userEntity.setStatus(EntityStatus.INACTIVE);
+                    return userRepository.save(userEntity);
+                });
     }
 }

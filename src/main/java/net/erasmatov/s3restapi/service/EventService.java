@@ -4,7 +4,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.EventEntity;
-import net.erasmatov.s3restapi.mapper.EventMapper;
 import net.erasmatov.s3restapi.repository.EventRepository;
 import net.erasmatov.s3restapi.repository.FileRepository;
 import net.erasmatov.s3restapi.repository.UserRepository;
@@ -20,7 +19,6 @@ public class EventService {
     private final UserRepository userRepository;
     private final FileRepository fileRepository;
     private final EventRepository eventRepository;
-    private final EventMapper eventMapper;
 
     public Mono<EventEntity> getEventById(Long id) {
         return eventRepository.findById(id)

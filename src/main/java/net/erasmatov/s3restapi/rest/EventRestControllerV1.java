@@ -2,12 +2,11 @@ package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.EventDto;
+import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.mapper.EventMapper;
-import net.erasmatov.s3restapi.security.CustomPrincipal;
 import net.erasmatov.s3restapi.service.EventService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -20,23 +19,22 @@ public class EventRestControllerV1 {
     private final EventService eventService;
     private final EventMapper eventMapper;
 
-    @GetMapping("/{eventId}")
-    public Flux<EventDto> getEvent(Authentication authentication, @PathVariable("eventId") Long eventId) {
-        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
-
-        if (authentication.getAuthorities().contains("USER")) {
-            return eventService.getEventsByUserId(principal.getId())
-                    .filter(eventEntity -> eventEntity.getId().equals(eventId))
-                    .map(eventMapper::map);
-        } else {
-            return eventService.getAllEvents()
-                    .map(eventMapper::map);
-        }
+    @PostMapping
+    public Mono<EventDto> createEvent(@RequestBody EventDto dto) {
+        EventEntity entity = eventMapper.map(dto);
+        return eventService.saveEvent(entity)
+                .map(eventMapper::map);
     }
 
     @GetMapping
     public Flux<EventDto> getEvents() {
         return eventService.getAllEvents()
+                .map(eventMapper::map);
+    }
+
+    @GetMapping("/{eventId}")
+    public Mono<EventDto> getEvent(@PathVariable("eventId") Long eventId) {
+        return eventService.getEventById(eventId)
                 .map(eventMapper::map);
     }
 
