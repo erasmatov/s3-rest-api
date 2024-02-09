@@ -3,6 +3,7 @@ package net.erasmatov.s3restapi.rest;
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.AuthRequestDto;
 import net.erasmatov.s3restapi.dto.AuthResponseDto;
+import net.erasmatov.s3restapi.dto.RegisterRequestDto;
 import net.erasmatov.s3restapi.dto.UserDto;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.mapper.UserMapper;
@@ -25,9 +26,12 @@ public class AuthRestControllerV1 {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public Mono<UserDto> register(@RequestBody UserDto dto) {
-        UserEntity entity = userMapper.map(dto);
-        return userService.registerUser(entity)
+    public Mono<UserDto> register(@RequestBody RegisterRequestDto dto) {
+        return userService.registerUser(UserEntity.builder()
+                        .username(dto.getUsername())
+                        .password(dto.getPassword())
+                        .role(dto.getRole())
+                        .build())
                 .map(userMapper::map);
     }
 

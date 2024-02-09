@@ -41,6 +41,11 @@ dependencies {
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'io.projectreactor:reactor-test'
+    testImplementation "org.testcontainers:testcontainers:$testcontainersVersion"
+    testImplementation 'org.testcontainers:mysql:1.18.3'
+    testImplementation "org.testcontainers:r2dbc:$testcontainersVersion"
+    testImplementation "org.testcontainers:junit-jupiter:$testcontainersVersion"
+    testImplementation "org.testcontainers:localstack:$testcontainersVersion"
 }
 
 tasks.named('bootBuildImage') {
