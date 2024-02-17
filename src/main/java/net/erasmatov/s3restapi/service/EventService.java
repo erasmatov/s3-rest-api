@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.erasmatov.s3restapi.dto.EventUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.repository.EventRepository;
@@ -38,6 +39,18 @@ public class EventService {
 
     public Mono<EventEntity> saveEvent(EventEntity entity) {
         return eventRepository.save(entity);
+    }
+
+    public Mono<EventEntity> updateEvent(Long eventId, EventUpdateRequestDto dto) {
+        return eventRepository.findById(eventId)
+                .flatMap(entity -> {
+                    EventEntity event = entity.toBuilder()
+                            .userId(dto.getUserId())
+                            .fileId(dto.getFileId())
+                            .status(dto.getStatus())
+                            .build();
+                    return eventRepository.save(event);
+                });
     }
 
     public Flux<EventEntity> getAllEvents() {

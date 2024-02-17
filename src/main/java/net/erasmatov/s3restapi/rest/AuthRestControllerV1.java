@@ -3,8 +3,8 @@ package net.erasmatov.s3restapi.rest;
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.AuthRequestDto;
 import net.erasmatov.s3restapi.dto.AuthResponseDto;
-import net.erasmatov.s3restapi.dto.RegisterRequestDto;
 import net.erasmatov.s3restapi.dto.UserDto;
+import net.erasmatov.s3restapi.dto.UserRegisterRequestDto;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.mapper.UserMapper;
 import net.erasmatov.s3restapi.security.CustomPrincipal;
@@ -26,7 +26,7 @@ public class AuthRestControllerV1 {
     private final UserMapper userMapper;
 
     @PostMapping("/register")
-    public Mono<UserDto> register(@RequestBody RegisterRequestDto dto) {
+    public Mono<UserDto> register(@RequestBody UserRegisterRequestDto dto) {
         return userService.registerUser(UserEntity.builder()
                         .username(dto.getUsername())
                         .password(dto.getPassword())
@@ -36,8 +36,8 @@ public class AuthRestControllerV1 {
     }
 
     @PostMapping("/login")
-    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto authRequestDto) {
-        return securityService.authenticate(authRequestDto.getUsername(), authRequestDto.getPassword())
+    public Mono<AuthResponseDto> login(@RequestBody AuthRequestDto dto) {
+        return securityService.authenticate(dto.getUsername(), dto.getPassword())
                 .flatMap(tokenDetails -> Mono.just(
                         AuthResponseDto.builder()
                                 .userId(tokenDetails.getUserId())
@@ -49,7 +49,7 @@ public class AuthRestControllerV1 {
     }
 
     @GetMapping("/info")
-    public Mono<UserDto> getUserInfo(Authentication authentication) {
+    public Mono<UserDto> userInfo(Authentication authentication) {
         CustomPrincipal customPrincipal = (CustomPrincipal) authentication.getPrincipal();
         return Mono.zip(userService.findUserById(customPrincipal.getId()),
                         eventService.getEventsByUserId(customPrincipal.getId()).collectList())

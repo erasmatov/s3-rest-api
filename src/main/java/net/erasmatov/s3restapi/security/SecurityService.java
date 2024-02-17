@@ -13,7 +13,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import reactor.core.publisher.Mono;
 
-import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -51,7 +50,7 @@ public class SecurityService {
     private TokenDetails generateToken(Date expirationDate, Map<String, Object> claims, String subject) {
         Date createdDate = new Date();
         String secretBase64 = Encoders.BASE64.encode(secret.getBytes());
-        Key key = Keys.hmacShaKeyFor(secretBase64.getBytes());
+        byte[] stringByte = secretBase64.getBytes();
 
         String token = Jwts.builder()
                 .claims(claims)
@@ -60,7 +59,7 @@ public class SecurityService {
                 .issuedAt(createdDate)
                 .id(UUID.randomUUID().toString())
                 .expiration(expirationDate)
-                .signWith(key)
+                .signWith(Keys.hmacShaKeyFor(stringByte))
                 .compact();
 
         return TokenDetails.builder()

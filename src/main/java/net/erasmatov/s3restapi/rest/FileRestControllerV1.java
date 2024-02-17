@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.FileDto;
+import net.erasmatov.s3restapi.dto.FileUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.FileEntity;
 import net.erasmatov.s3restapi.mapper.FileMapper;
 import net.erasmatov.s3restapi.security.CustomPrincipal;
@@ -25,32 +26,32 @@ public class FileRestControllerV1 {
     @PostMapping("/upload")
     public Mono<FileDto> uploadFile(Authentication authentication, @RequestPart("file-data") FilePart fileData) {
         CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
-        return fileService.uploadFile(fileData, principal.getName())
-                .map(fileMapper::map);
+        return fileService.uploadFile(fileData, principal.getName()).map(fileMapper::map);
     }
 
     @PostMapping
     public Mono<FileDto> createFile(@RequestBody FileDto dto) {
         FileEntity entity = fileMapper.map(dto);
-        return fileService.saveFile(entity)
-                .map(fileMapper::map);
-    }
-
-    @GetMapping
-    public Flux<FileDto> getFiles() {
-        return fileService.getAllFiles()
-                .map(fileMapper::map);
+        return fileService.saveFile(entity).map(fileMapper::map);
     }
 
     @GetMapping("/{fileId}")
-    public Mono<FileDto> getFile(@PathVariable("fileId") Long fileId) {
-        return fileService.getFileById(fileId)
-                .map(fileMapper::map);
+    public Mono<FileDto> readFile(@PathVariable("fileId") Long fileId) {
+        return fileService.getFileById(fileId).map(fileMapper::map);
+    }
+
+    @GetMapping
+    public Flux<FileDto> readFiles() {
+        return fileService.getAllFiles().map(fileMapper::map);
+    }
+
+    @PutMapping("/{fileId}")
+    public Mono<FileDto> updateFile(@PathVariable("fileId") Long fileId, @RequestBody FileUpdateRequestDto dto) {
+        return fileService.updateFile(fileId, dto).map(fileMapper::map);
     }
 
     @DeleteMapping("/{fileId}")
     public Mono<ResponseEntity<Void>> deleteFile(@PathVariable("fileId") Long fileId) {
-        return fileService.deleteFileById(fileId)
-                .map(fileEntity -> ResponseEntity.status(HttpStatus.OK).build());
+        return fileService.deleteFileById(fileId).map(fileEntity -> ResponseEntity.status(HttpStatus.OK).build());
     }
 }

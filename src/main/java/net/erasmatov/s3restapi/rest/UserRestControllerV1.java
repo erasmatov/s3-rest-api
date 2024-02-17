@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.UserDto;
+import net.erasmatov.s3restapi.dto.UserUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.entity.UserRole;
 import net.erasmatov.s3restapi.mapper.UserMapper;
@@ -25,12 +26,24 @@ public class UserRestControllerV1 {
     @PostMapping
     public Mono<UserDto> createUser(@RequestBody UserDto dto) {
         UserEntity entity = userMapper.map(dto);
-        return userService.saveUser(entity)
-                .map(userMapper::map);
+        return userService.saveUser(entity).map(userMapper::map);
+    }
+
+    @GetMapping("/{userId}")
+    public Mono<UserDto> readUser(Authentication authentication, @PathVariable("userId") Long userId) {
+        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
+
+        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
+            return userService.findUserById(userId).map(userMapper::map);
+        } else {
+            return Flux.merge(userService.getUsersByRole(UserRole.USER), userService.findUserById(principal.getId()))
+                    .filter(userEntity -> userEntity.getId().equals(userId))
+                    .singleOrEmpty().map(userMapper::map);
+        }
     }
 
     @GetMapping
-    public Flux<UserDto> getUsers(Authentication authentication) {
+    public Flux<UserDto> readUsers(Authentication authentication) {
         if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
             return userService.getAllUsers()
                     .map(userMapper::map);
@@ -40,24 +53,13 @@ public class UserRestControllerV1 {
         }
     }
 
-    @GetMapping("/{userId}")
-    public Mono<UserDto> getUser(Authentication authentication, @PathVariable("userId") Long userId) {
-        CustomPrincipal principal = (CustomPrincipal) authentication.getPrincipal();
-
-        if (authentication.getAuthorities().stream().anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN"))) {
-            return userService.findUserById(userId)
-                    .map(userMapper::map);
-        } else {
-            return Flux.merge(userService.getUsersByRole(UserRole.USER), userService.findUserById(principal.getId()))
-                    .filter(userEntity -> userEntity.getId().equals(userId))
-                    .singleOrEmpty()
-                    .map(userMapper::map);
-        }
+    @PutMapping("/{userId}")
+    public Mono<UserDto> updateUser(@PathVariable("userId") Long userId, @RequestBody UserUpdateRequestDto dto) {
+        return userService.updateUser(userId, dto).map(userMapper::map);
     }
 
     @DeleteMapping("/{userId}")
     public Mono<ResponseEntity<Void>> deleteUser(@PathVariable("userId") Long userId) {
-        return userService.deleteUserById(userId)
-                .map(userEntity -> ResponseEntity.status(HttpStatus.OK).build());
+        return userService.deleteUserById(userId).map(userEntity -> ResponseEntity.status(HttpStatus.OK).build());
     }
 }

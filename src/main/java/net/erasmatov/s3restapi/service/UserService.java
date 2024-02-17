@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.service;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import net.erasmatov.s3restapi.dto.UserUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.UserEntity;
 import net.erasmatov.s3restapi.entity.UserRole;
@@ -62,6 +63,19 @@ public class UserService {
                     userEntity.setUpdatedAt(Instant.now());
                     userEntity.setStatus(EntityStatus.INACTIVE);
                     return userRepository.save(userEntity);
+                });
+    }
+
+    public Mono<UserEntity> updateUser(Long userId, UserUpdateRequestDto dto) {
+        return userRepository.findById(userId)
+                .flatMap(userEntity -> {
+                    UserEntity user = userEntity.toBuilder()
+                            .username(dto.getUsername())
+                            .role(dto.getRole())
+                            .updatedAt(Instant.now())
+                            .status(dto.getStatus())
+                            .build();
+                    return userRepository.save(user);
                 });
     }
 }

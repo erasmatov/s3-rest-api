@@ -3,6 +3,7 @@ package net.erasmatov.s3restapi.service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import net.erasmatov.s3restapi.dto.FileResponseDto;
+import net.erasmatov.s3restapi.dto.FileUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.EntityStatus;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.entity.FileEntity;
@@ -70,6 +71,18 @@ public class FileService {
 
     public Mono<FileEntity> saveFile(FileEntity entity) {
         return fileRepository.save(entity);
+    }
+
+    public Mono<FileEntity> updateFile(Long fileId, FileUpdateRequestDto dto) {
+        return fileRepository.findById(fileId)
+                .flatMap(fileEntity -> {
+                    FileEntity file = fileEntity.toBuilder()
+                            .filename(dto.getFilename())
+                            .location(dto.getLocation())
+                            .status(dto.getStatus())
+                            .build();
+                    return fileRepository.save(file);
+                });
     }
 
     public Flux<FileEntity> getAllFiles() {

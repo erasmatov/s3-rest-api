@@ -39,16 +39,19 @@ public class WebSecurityConfig {
                 .pathMatchers(HttpMethod.POST, "/api/v1/users").hasRole("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/api/v1/users").hasAnyRole("ADMIN", "MODERATOR")
                 .pathMatchers(HttpMethod.GET, "/api/v1/users/**").hasAnyRole("ADMIN", "MODERATOR")
+                .pathMatchers(HttpMethod.PUT, "/api/v1/users/**").hasAnyRole("ADMIN")
                 .pathMatchers(HttpMethod.DELETE, "/api/v1/users/**").hasAnyRole("ADMIN", "MODERATOR")
 
                 .pathMatchers(HttpMethod.POST, "/api/v1/files").hasRole("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/api/v1/files").hasAnyRole("ADMIN", "MODERATOR")
                 .pathMatchers(HttpMethod.GET, "/api/v1/files/**").hasAnyRole("ADMIN", "MODERATOR")
+                .pathMatchers(HttpMethod.PUT, "/api/v1/files/**").hasAnyRole("ADMIN")
                 .pathMatchers(HttpMethod.DELETE, "/api/v1/files/**").hasAnyRole("ADMIN", "MODERATOR")
 
                 .pathMatchers(HttpMethod.POST, "/api/v1/events").hasRole("ADMIN")
                 .pathMatchers(HttpMethod.GET, "/api/v1/events").hasAnyRole("ADMIN", "MODERATOR")
                 .pathMatchers(HttpMethod.GET, "/api/v1/events/**").hasAnyRole("ADMIN", "MODERATOR")
+                .pathMatchers(HttpMethod.PUT, "/api/v1/events/**").hasAnyRole("ADMIN")
                 .pathMatchers(HttpMethod.DELETE, "/api/v1/events/**").hasAnyRole("ADMIN", "MODERATOR")
 
                 .anyExchange()

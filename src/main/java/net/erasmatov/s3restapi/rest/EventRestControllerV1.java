@@ -2,6 +2,7 @@ package net.erasmatov.s3restapi.rest;
 
 import lombok.RequiredArgsConstructor;
 import net.erasmatov.s3restapi.dto.EventDto;
+import net.erasmatov.s3restapi.dto.EventUpdateRequestDto;
 import net.erasmatov.s3restapi.entity.EventEntity;
 import net.erasmatov.s3restapi.mapper.EventMapper;
 import net.erasmatov.s3restapi.service.EventService;
@@ -22,25 +23,26 @@ public class EventRestControllerV1 {
     @PostMapping
     public Mono<EventDto> createEvent(@RequestBody EventDto dto) {
         EventEntity entity = eventMapper.map(dto);
-        return eventService.saveEvent(entity)
-                .map(eventMapper::map);
-    }
-
-    @GetMapping
-    public Flux<EventDto> getEvents() {
-        return eventService.getAllEvents()
-                .map(eventMapper::map);
+        return eventService.saveEvent(entity).map(eventMapper::map);
     }
 
     @GetMapping("/{eventId}")
-    public Mono<EventDto> getEvent(@PathVariable("eventId") Long eventId) {
-        return eventService.getEventById(eventId)
-                .map(eventMapper::map);
+    public Mono<EventDto> readEvent(@PathVariable("eventId") Long eventId) {
+        return eventService.getEventById(eventId).map(eventMapper::map);
+    }
+
+    @GetMapping
+    public Flux<EventDto> readEvents() {
+        return eventService.getAllEvents().map(eventMapper::map);
+    }
+
+    @PutMapping("/{eventId}")
+    public Mono<EventDto> updateEvent(@PathVariable("eventId") Long eventId, @RequestBody EventUpdateRequestDto dto) {
+        return eventService.updateEvent(eventId, dto).map(eventMapper::map);
     }
 
     @DeleteMapping("/{eventId}")
     public Mono<ResponseEntity<Void>> deleteEvent(@PathVariable("eventId") Long eventId) {
-        return eventService.deleteEventById(eventId)
-                .map(eventEntity -> ResponseEntity.status(HttpStatus.OK).build());
+        return eventService.deleteEventById(eventId).map(eventEntity -> ResponseEntity.status(HttpStatus.OK).build());
     }
 }
